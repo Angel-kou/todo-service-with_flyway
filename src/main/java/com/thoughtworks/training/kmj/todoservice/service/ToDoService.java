@@ -25,13 +25,16 @@ public class ToDoService {
     }
 
 
-    public Map<String,List<ToDo>> getToDoList() throws IOException {
-        String json = toDoRepository.getData();
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String,List<ToDo>> map = objectMapper.readValue(json,
-                new TypeReference<Map<String,List<ToDo>>>(){}
-        );
-//        System.out.println(map);
-        return map;
-    }
+//    public List<ToDo> getToDoList() throws IOException {
+//        String json = toDoRepository.getData();
+//        ObjectMapper objectMapper = new ObjectMapper();
+////        Map<String,List<ToDo>> map = objectMapper.readValue(json,
+////                new TypeReference<Map<String,List<ToDo>>>(){}
+////        );
+//         List<ToDo> map = objectMapper.readValue(json,
+//                new TypeReference<List<ToDo>>(){}
+//        );
+////        System.out.println(map);
+//        return map;
+//    }
 }

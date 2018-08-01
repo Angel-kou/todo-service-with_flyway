@@ -27,18 +27,18 @@ public class ToDoController {
     private ObjectMapper objectMapper;
 
 
-//    @RequestMapping(method = RequestMethod.GET,path="/todos")
-//    public List<ToDo> toDoList() throws JsonProcessingException {
-////        model.addAttribute("todoList",todoService.getList());
-//        List<ToDo> list = todoService.getList();
-//        System.out.println(objectMapper.writeValueAsString(list));
-//        return list;
-//    }
-
-
     @RequestMapping(method = RequestMethod.GET,path="/todos")
-    public Map<String,List<ToDo>> toDoList() throws IOException {
-        return todoService.getToDoList();
+    public List<ToDo> toDoList1() throws JsonProcessingException {
+//        model.addAttribute("todoList",todoService.getList());
+        List<ToDo> list = todoService.getList();
+//        System.out.println(objectMapper.writeValueAsString(list));
+        return list;
     }
+
+
+//    @RequestMapping(method = RequestMethod.GET,path="/todos")
+//    public List<ToDo> toDoList() throws IOException {
+//        return todoService.getToDoList();
+//    }
 
 }
