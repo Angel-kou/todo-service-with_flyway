@@ -1,22 +1,25 @@
 package com.thoughtworks.training.kmj.todoservice.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
-@Table(name = "item")
+@Table(name = "Todo")
+@SQLDelete(sql="update todo set deleted=true where id = ?")
+@Where(clause = "deleted = false")
 public class ToDo {
 
     @Id
@@ -29,21 +32,10 @@ public class ToDo {
 
     private boolean readonly;
 
+//    @OneToMany(targetEntity = Task.class , cascade = CascadeType.ALL,mappedBy = "toDo") // 关系被维护端
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "todo_id")
+    private List<Task> tasks;
 
-//    @JsonProperty("completed")
-//    public boolean completed(){
-//        return false;
-//    }
-//
-//    @JsonProperty("readOnly")
-//    public boolean readOnly(){
-//        return true;
-//    }
-//
-//
-//    @JsonIgnore
-//    @JsonProperty("test")
-//    public String name(){
-//        return "haha";
-//    }
+
 }
