@@ -1,5 +1,6 @@
 package com.thoughtworks.training.kmj.todoservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,6 +37,9 @@ public class ToDo {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "todo_id")
     private List<Task> tasks;
+
+    @JsonIgnore
+    private int userId;
 
 
 }

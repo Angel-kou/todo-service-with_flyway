@@ -3,4 +3,4 @@ CREATE TABLE user(
     name VARCHAR(255),
     password VARCHAR(255),
     deleted boolean default false
-) engine=InnoDB DEFAULT CHARSET = gbk;
+) engine=InnoDB DEFAULT CHARSET = UTF8;

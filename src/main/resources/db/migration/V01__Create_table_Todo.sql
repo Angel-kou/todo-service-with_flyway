@@ -3,4 +3,4 @@ CREATE TABLE Todo(
     content VARCHAR(255),
     completed BOOLEAN,
     readonly BOOLEAN
-) engine=InnoDB DEFAULT CHARSET = gbk;
+) engine=InnoDB DEFAULT CHARSET = UTF8;

@@ -11,4 +11,9 @@ import java.util.List;
 public interface ToDoRepository extends JpaRepository<ToDo,Integer> {
 
     List<ToDo> findAllByCompletedIs(boolean completed);
+
+
+
+    List<ToDo> findAllByUserIdIs(Integer id);
+
 }
