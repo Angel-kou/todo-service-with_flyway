@@ -9,7 +9,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -18,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "Todo")
+@Table(name = "todo")
 @SQLDelete(sql="update todo set deleted=true where id = ?")
 @Where(clause = "deleted = false")
 public class ToDo {
@@ -38,8 +37,13 @@ public class ToDo {
     @JoinColumn(name = "todo_id")
     private List<Task> tasks;
 
+//    @JsonIgnore
+//    private int userId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     @JsonIgnore
-    private int userId;
+    private User user;
 
 
 }

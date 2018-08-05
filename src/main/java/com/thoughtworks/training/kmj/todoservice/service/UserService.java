@@ -2,46 +2,42 @@ package com.thoughtworks.training.kmj.todoservice.service;
 
 import com.thoughtworks.training.kmj.todoservice.model.User;
 import com.thoughtworks.training.kmj.todoservice.repository.UserRepository;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.thoughtworks.training.kmj.todoservice.utils.Constants;
+import com.thoughtworks.training.kmj.todoservice.utils.JwtAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
+
+
     @Autowired
     UserRepository userRepository;
 
-    public String create(User user) {
-        System.out.println("----222------");
-
-        if(isRegister(user)){
-            return "user has signed";
-        }else{
-            System.out.println("----333------");
-
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            String encodedPassword = encoder.encode("password");
-            user.setPassword(encodedPassword);
-            userRepository.save(user);
-            return "create success";
+    public ResponseEntity create(User user) {
+        Optional<User> user1 = userRepository.findOneByName(user.getName());
+        if (user1.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Constants.USERNAME_CONFLICT);
         }
-    }
 
-    private boolean isRegister(User user) {
-        if(verify(user.getName(),user.getPassword())){
-            return true;
-        }
-        return false;
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode("password");
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Constants.CREATE_SUCCESS);
+
     }
 
 
     public List<User> find() {
+        System.out.println("find user----------");
         return userRepository.findAll();
     }
 
@@ -57,28 +53,17 @@ public class UserService {
         return userRepository.findIdByName(username).getId();
     }
 
-    public String login(User user) {
+    public ResponseEntity login(User user) {
         if(verify(user.getName(),user.getPassword())){
-            return generateToken(user);
+            int id = findIdByName(user.getName());
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(JwtAuthentication.generateToken(id));
         }
-        return "username or password error";
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.USERNAME_OR_PASSWORD_ERROR);
     }
 
-    private String generateToken(User user) {
-
-        int id = findIdByName(user.getName());
-        HashMap<String,Object> claims = new HashMap<>();
-        claims.put("id",id);
-        claims.put("name",user.getName());
-
-        byte[] secretKey = "kmj".getBytes();
-
-        //generate
-        String token = Jwts.builder()
-                .addClaims(claims)
-//                .setExpiration(Date.from(Instant.now().minus(1,ChronoUnit.DAYS)))
-                .signWith(SignatureAlgorithm.HS512,secretKey)
-                .compact();
-        return token;
+    public User findUser(Integer id){
+        return userRepository.findOne(id);
     }
+
+
 }

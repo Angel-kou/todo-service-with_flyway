@@ -3,10 +3,12 @@ package com.thoughtworks.training.kmj.todoservice.security;
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.HttpHeaders;
 import com.thoughtworks.training.kmj.todoservice.service.UserService;
+import com.thoughtworks.training.kmj.todoservice.utils.JwtAuthentication;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -18,16 +20,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 
 @Component
 public class TodoAuthFilter extends OncePerRequestFilter {
+
+    public static final String KMJ = "kmj";
 
     @Autowired
     private UserService userService;
 
 //    @Override
 //    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//        System.out.println("path:  "+request.getContextPath());
 //        return request.getContextPath().startsWith("/login");
 //    }
 
@@ -38,36 +44,31 @@ public class TodoAuthFilter extends OncePerRequestFilter {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         System.out.println("------token-----------"+token);
         if(!StringUtils.isEmpty(token)){
-            int id = validateToken(token);
-            if( id != 0){
-                SecurityContextHolder.getContext().setAuthentication(
-                        new UsernamePasswordAuthenticationToken(id,null,
-                                ImmutableList.of(new SimpleGrantedAuthority("dev"),
-                                        new SimpleGrantedAuthority("play")))
-                );
-                Object y =SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                System.out.println("xyz-------------"+y);
-            }
+            Claims claims = JwtAuthentication.validateToken(token);
+            Integer userId = JwtAuthentication.getUserId(claims);
+
+            SecurityContextHolder.getContext().setAuthentication(
+                    new UsernamePasswordAuthenticationToken(userId,null,
+                            ImmutableList.of(new SimpleGrantedAuthority("dev"),
+                                    new SimpleGrantedAuthority("play")))
+            );
+
         }
+        System.out.println("=====filter=======");
         filterChain.doFilter(request,response);
 
     }
 
-//    private boolean validateToken(String token) {
-//        String[] userPass = token.split(":");
-//        String username = userPass[0];
-//        String password = userPass[1];
-//        return userService.verify(username,password);
-//    }
 
-    private int validateToken(String token) {
-
-        byte[] secretKey = "kmj".getBytes();
-        Claims body = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-
-        return (int) body.get("id");
+    public static Integer getUserId() {
+        Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        System.out.println("principal {}, "+principal+"---------role {}-------"+authorities);
+        return (Integer) principal;
     }
+
+
+
+
 }

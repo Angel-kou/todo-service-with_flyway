@@ -4,6 +4,7 @@ import com.thoughtworks.training.kmj.todoservice.model.ToDo;
 import com.thoughtworks.training.kmj.todoservice.service.ToDoService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,13 +33,13 @@ public class ToDoController {
 
 
     @PostMapping("/todos")
-    public void create(@RequestBody ToDo todo)  {
-        todoService.create(todo);
+    public ResponseEntity create(@RequestBody ToDo todo)  {
+        return todoService.create(todo);
     }
 
     @DeleteMapping("/todos/{id}")
-    public void delete(@PathVariable Integer id)  {
-        todoService.delete(id);
+    public ResponseEntity delete(@PathVariable Integer id)  {
+        return todoService.delete(id);
     }
 
     @PutMapping(value="/todos/update/{id}")

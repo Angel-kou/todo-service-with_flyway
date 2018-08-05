@@ -2,16 +2,16 @@ package com.thoughtworks.training.kmj.todoservice.service;
 
 import com.thoughtworks.training.kmj.todoservice.model.ToDo;
 import com.thoughtworks.training.kmj.todoservice.repository.ToDoRepository;
+import com.thoughtworks.training.kmj.todoservice.security.TodoAuthFilter;
+import com.thoughtworks.training.kmj.todoservice.utils.Constants;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,28 +26,29 @@ public class ToDoService {
     private UserService userService;
 
      public List<ToDo> getList() {
-         Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
-         Object principal = authentication.getPrincipal();
-         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-         System.out.println("principal {}, "+principal+"---------role {}-------"+authorities);
-//         int id  = userService.findIdByName((String) principal);
-         List<ToDo> list = toDoRepository.findAllByUserIdIs((Integer) principal);
+         Integer userId = TodoAuthFilter.getUserId();
+         List<ToDo> list = toDoRepository.findAllByUserIdIs(userId);
         return list;
     }
 
-    public void create(ToDo todo) {
-//        todo.getTasks().forEach(task -> task.setToDo(todo));
 
-         toDoRepository.save(todo);
+
+    public ResponseEntity create(ToDo todo) {
+//        todo.getTasks().forEach(task -> task.setToDo(todo));
+        Integer userId = TodoAuthFilter.getUserId();
+        todo.setUser(userService.findUser(userId));
+        toDoRepository.save(todo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Constants.CREATE_SUCCESS);
     }
 
-    public void delete(Integer id) {
+    public ResponseEntity delete(Integer id) {
          toDoRepository.delete(id);
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.DELETE_SUCCESS);
     }
 
     public ToDo update(Integer id) {
         ToDo toDo = toDoRepository.findOne(id);
-        toDo.setContent("todoy");
+        toDo.setContent("haha");
         toDoRepository.save(toDo);
         return toDo;
     }

@@ -4,6 +4,7 @@ package com.thoughtworks.training.kmj.todoservice.controller;
 import com.thoughtworks.training.kmj.todoservice.model.User;
 import com.thoughtworks.training.kmj.todoservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,8 +20,7 @@ public class UserAPI {
     private UserService userService;
 
     @PostMapping("/users")
-    public String create(@RequestBody User user)  {
-        System.out.println("----111------");
+    public ResponseEntity create(@RequestBody User user)  {
         return userService.create(user);
     }
 
@@ -30,7 +30,7 @@ public class UserAPI {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user)  {
+    public ResponseEntity login(@RequestBody User user)  {
         return userService.login(user);
     }
 
