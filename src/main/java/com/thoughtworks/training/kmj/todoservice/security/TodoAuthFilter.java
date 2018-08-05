@@ -42,7 +42,6 @@ public class TodoAuthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        System.out.println("------token-----------"+token);
         if(!StringUtils.isEmpty(token)){
             Claims claims = JwtAuthentication.validateToken(token);
             Integer userId = JwtAuthentication.getUserId(claims);
@@ -54,7 +53,6 @@ public class TodoAuthFilter extends OncePerRequestFilter {
             );
 
         }
-        System.out.println("=====filter=======");
         filterChain.doFilter(request,response);
 
     }
@@ -64,7 +62,6 @@ public class TodoAuthFilter extends OncePerRequestFilter {
         Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        System.out.println("principal {}, "+principal+"---------role {}-------"+authorities);
         return (Integer) principal;
     }
 
